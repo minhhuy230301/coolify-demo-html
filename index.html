@@ -5,7 +5,7 @@
     <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mini Gem w/ MCP</title>
 </head>
-<body style="background-color: #d1a3ad; font-family: sans-serif; text-align: center; padding-top: 20px; color: black; transition: 0.3s;">
+<body style="background-color: #a71e5; font-family: sans-serif; text-align: center; padding-top: 20px; color: black; transition: 0.3s;">
     
     <h1>🏢 BUSINESS APP (MAIN)</h1>
     
@@ -48,7 +48,7 @@
 
             try {
                 // Gọi API của server Node.js giả lập
-                const res = await fetch('https://LINK_NGROK_CỔNG_3002_CỦA_BẠN/trigger-sync');
+                const res = await fetch('http://localhost:3002/trigger-sync');
                 const result = await res.json();
                 
                 if(result.success) {
