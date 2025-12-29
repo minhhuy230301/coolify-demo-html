@@ -1,20 +1,78 @@
 
-    <!DOCTYPE html>
-    <html lang="vi"> 
-      <head>
-        <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>mini-gem Update</title>
-      </head>
-      <body style="background-color: #46e5b7; font-family: sans-serif; text-align: center; padding-top: 50px; transition: 0.5s; color: white">
-        <h1>💎 GEM MINI APP</h1>
-        <h3>Phiên bản cập nhật lúc: 16:43:44</h3>
-        <div style="border: 2px dashed #333; padding: 20px; display: inline-block; background: rgba(255,255,255,0.3); backdrop-filter: blur(5px);">
-           Nhánh hiện tại: <strong>mini-gem</strong> <br>
-           Mã màu: <strong>#46e5b7</strong>
-        </div>
-        
-        
-        
-      </body>
-    </html>
-  
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Gem w/ MCP</title>
+</head>
+<body style="background-color: #da9de6; font-family: sans-serif; text-align: center; padding-top: 20px; color: white; transition: 0.3s;">
+    
+    <h1>💎 GEM MINI APP</h1>
+    
+    <div id="data-board" style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; margin: 20px auto; max-width: 400px; display: none;">
+        <h3>📊 Dữ liệu từ MCP System</h3>
+        <p>Doanh thu: <strong id="rev" style="font-size: 1.2em; color: #ffd700;">---</strong></p>
+        <p>User Online: <strong id="users">---</strong></p>
+        <small>Cập nhật lúc: <span id="sync-time">---</span></small>
+    </div>
+
+    <button onclick="callMCP()" style="padding: 15px 30px; font-size: 18px; cursor: pointer; background: #ff4757; color: white; border: none; border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+        🔄 SYNC DATA FROM MCP
+    </button>
+    <p id="status-msg" style="margin-top: 10px; font-style: italic; opacity: 0.8;"></p>
+
+    <script>
+        // 1. Hàm tải dữ liệu JSON (Nếu file tồn tại sau khi deploy)
+        async function loadData() {
+            try {
+                // Thêm timestamp để tránh cache trình duyệt
+                const res = await fetch('./data.json?t=' + Date.now());
+                if(res.ok) {
+                    const data = await res.json();
+                    document.getElementById('data-board').style.display = 'block';
+                    document.getElementById('rev').innerText = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.total_revenue);
+                    document.getElementById('users').innerText = data.active_users;
+                    document.getElementById('sync-time').innerText = data.last_sync;
+                }
+            } catch(e) { console.log("Chưa có dữ liệu json"); }
+        }
+
+        // 2. Hàm gọi MCP Server
+        async function callMCP() {
+            const btn = document.querySelector('button');
+            const status = document.getElementById('status-msg');
+            
+            btn.disabled = true; 
+            btn.innerText = "⏳ Đang gọi MCP...";
+            status.innerText = "Đang kết nối đến hệ thống MCP giả lập...";
+
+            try {
+                // Gọi API của server Node.js giả lập
+                const res = await fetch('http://localhost:3002/trigger-sync');
+                const result = await res.json();
+                
+                if(result.success) {
+                    status.innerText = "✅ MCP đã xử lý xong! Đang đẩy lên GitHub và chờ Deploy...";
+                    btn.innerText = "🚀 Đang Deploy...";
+                    
+                    // Vì Coolify cần thời gian deploy, ta set timeout reload trang
+                    // Thực tế nên dùng WebSocket, nhưng demo reload sau 15s là ổn
+                    setTimeout(() => {
+                        window.location.reload(); 
+                    }, 15000); 
+                } else {
+                    status.innerText = "❌ Lỗi: " + result.error;
+                    btn.disabled = false; btn.innerText = "🔄 Thử lại";
+                }
+            } catch (err) {
+                status.innerText = "❌ Không kết nối được MCP Server!";
+                btn.disabled = false; btn.innerText = "🔄 Thử lại";
+                console.error(err);
+            }
+        }
+
+        // Tự động tải dữ liệu khi vào trang
+        loadData();
+    </script>
+</body>
+</html>
