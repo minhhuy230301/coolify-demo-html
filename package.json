@@ -1,0 +1,12 @@
+{
+  "name": "auto-deploy-tool",
+  "version": "1.0.0",
+  "description": "",
+  "main": "auto-update.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
