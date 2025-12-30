@@ -78,6 +78,7 @@ app.post("/github-webhook", async (req, res) => {
         ports_exposes: "80",
 
         build_pack: "dockerfile",
+        // build_pack: "static_image",
 
         name: `auto-${branchName.replace(/\//g, "-")}`,
       };
