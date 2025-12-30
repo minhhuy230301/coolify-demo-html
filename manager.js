@@ -101,7 +101,11 @@ app.post("/github-webhook", async (req, res) => {
       console.log(`⚙️  Đang cấu hình Port ${randomPort}...`);
       await callCoolify("PATCH", `/applications/${appUuid}`, {
         static_image: "nginx:alpine",
-        ports_exposes: `${randomPort}:80`,
+        ports_exposes: "80",
+
+        // 2. Dùng lệnh Docker thuần túy để Map cổng (Host:Container)
+        // Đây là chìa khóa để App chạy đúng cổng bạn muốn!
+        custom_docker_run_options: `--publish ${randomPort}:80`,
       });
 
       // Deploy lần đầu
