@@ -80,8 +80,7 @@ app.post("/github-webhook", async (req, res) => {
         git_repository: `https://github.com/${OWNER}/${REPO}`,
         git_branch: branchName,
 
-        // ❌ XÓA DÒNG NÀY ĐI (Nguyên nhân gây lỗi format)
-        ports_exposes: String(randomPort) + ":80",
+        ports_exposes: "80",
 
         build_pack: "static",
         is_static: true,
