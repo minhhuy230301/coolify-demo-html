@@ -76,17 +76,19 @@ app.post("/github-webhook", async (req, res) => {
         server_uuid: COOLIFY_SERVER_UUID,
         environment_name: COOLIFY_ENV_NAME,
 
-        // 1. Sửa lỗi Git URL: Thêm https://github.com/ vào trước
+        // Link Git đã sửa đúng
         git_repository: `https://github.com/${OWNER}/${REPO}`,
-
         git_branch: branchName,
 
-        // 2. Sửa lỗi Port: Đảm bảo chuyển về chuỗi chuẩn xác "PORT:80"
-        ports_exposes: String(randomPort) + ":80",
+        // ❌ XÓA DÒNG NÀY ĐI (Nguyên nhân gây lỗi format)
+        // ports_exposes: String(randomPort) + ":80",
 
         build_pack: "static",
         is_static: true,
-        name: `auto-${branchName}`,
+
+        // ✅ SỬA TÊN APP: Thay dấu '/' thành '-' (Ví dụ: feat/login -> auto-feat-login)
+        // Để tránh lỗi tên Container không hợp lệ
+        name: `auto-${branchName.replace(/\//g, "-")}`,
       };
 
       const created = await callCoolify(
@@ -96,7 +98,8 @@ app.post("/github-webhook", async (req, res) => {
       );
       const appUuid = created.uuid;
 
-      // Cấu hình Nginx image
+      // --- CẤU HÌNH PORT Ở BƯỚC NÀY (An toàn hơn) ---
+      console.log(`⚙️  Đang cấu hình Port ${randomPort}...`);
       await callCoolify("PATCH", `/applications/${appUuid}`, {
         static_image: "nginx:alpine",
         ports_exposes: `${randomPort}:80`,
