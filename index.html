@@ -39,7 +39,11 @@
                 const status = document.getElementById('status-msg');
                 btn.disabled = true; btn.innerText = "⏳ Đang gọi MCP...";
                 try {
-                    const res = await fetch('https://4c69332c5047.ngrok-free.app/trigger-sync');
+                    const res = await fetch('https://4c69332c5047.ngrok-free.app/trigger-sync', {
+                        headers: {
+                            "ngrok-skip-browser-warning": "true"
+                        }
+                    });
                     const result = await res.json();
                     if(result.success) {
                         status.innerText = "✅ MCP đã xử lý! Đang Deploy...";
