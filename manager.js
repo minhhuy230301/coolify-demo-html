@@ -75,9 +75,15 @@ app.post("/github-webhook", async (req, res) => {
         project_uuid: COOLIFY_PROJECT_UUID,
         server_uuid: COOLIFY_SERVER_UUID,
         environment_name: COOLIFY_ENV_NAME,
-        git_repository: `${OWNER}/${REPO}`,
+
+        // 1. Sửa lỗi Git URL: Thêm https://github.com/ vào trước
+        git_repository: `https://github.com/${OWNER}/${REPO}`,
+
         git_branch: branchName,
-        ports_exposes: `${randomPort}:80`,
+
+        // 2. Sửa lỗi Port: Đảm bảo chuyển về chuỗi chuẩn xác "PORT:80"
+        ports_exposes: String(randomPort) + ":80",
+
         build_pack: "static",
         is_static: true,
         name: `auto-${branchName}`,
