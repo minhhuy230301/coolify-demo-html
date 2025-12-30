@@ -6,10 +6,7 @@ require("dotenv").config();
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const OWNER = process.env.GITHUB_OWNER || "minhhuy230301"; // Thay bằng username của bạn nếu chưa set env
 const REPO = process.env.GITHUB_REPO || "coolify-demo-html"; // Thay bằng tên repo của bạn
-console.log(
-  "🔑 Token đang dùng:",
-  GITHUB_TOKEN ? GITHUB_TOKEN.substring(0, 10) + "..." : "KHÔNG TÌM THẤY!"
-);
+
 // 2. Cấu hình Webhook Coolify (Dán link Deploy Webhook vào đây)
 const COOLIFY_WEBHOOKS = {
   main: "https://46e4ba43f8a7.ngrok-free.app/api/v1/deploy?uuid=fw4swkc888400sww4cocoo8w&force=false",
