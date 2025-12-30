@@ -42,16 +42,11 @@ app.post("/github-webhook", async (req, res) => {
   }
 
   const payload = req.body;
-  // Lấy tên nhánh từ ref (VD: "refs/heads/feature-abc" -> "feature-abc")
   const branchName = payload.ref.replace("refs/heads/", "");
-
-  // Bỏ qua nhánh main nếu bạn muốn (hoặc xử lý luôn cũng được)
-  // if (branchName === 'main') return res.send('Skip main');
 
   console.log(`🔔 CÓ BIẾN! Phát hiện push code vào nhánh: [ ${branchName} ]`);
 
   try {
-    // 1. Kiểm tra xem App này đã tồn tại trên Coolify chưa
     const resources = await callCoolify("GET", "/resources");
     const existingApp = resources.find(
       (r) =>
@@ -83,10 +78,8 @@ app.post("/github-webhook", async (req, res) => {
         ports_exposes: "80",
 
         build_pack: "static",
-        is_static: true,
+        // is_static: true,
 
-        // ✅ SỬA TÊN APP: Thay dấu '/' thành '-' (Ví dụ: feat/login -> auto-feat-login)
-        // Để tránh lỗi tên Container không hợp lệ
         name: `auto-${branchName.replace(/\//g, "-")}`,
       };
 
@@ -97,14 +90,11 @@ app.post("/github-webhook", async (req, res) => {
       );
       const appUuid = created.uuid;
 
-      // --- CẤU HÌNH PORT Ở BƯỚC NÀY (An toàn hơn) ---
       console.log(`⚙️  Đang cấu hình Port ${randomPort}...`);
       await callCoolify("PATCH", `/applications/${appUuid}`, {
-        static_image: "nginx:alpine",
+        // static_image: "nginx:alpine",
         ports_exposes: "80",
 
-        // 2. Dùng lệnh Docker thuần túy để Map cổng (Host:Container)
-        // Đây là chìa khóa để App chạy đúng cổng bạn muốn!
         custom_docker_run_options: `--publish ${randomPort}:80`,
       });
 
