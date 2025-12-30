@@ -78,7 +78,6 @@ app.post("/github-webhook", async (req, res) => {
         ports_exposes: "80",
 
         build_pack: "dockerfile",
-        // is_static: true,
 
         name: `auto-${branchName.replace(/\//g, "-")}`,
       };
