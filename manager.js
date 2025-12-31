@@ -102,8 +102,6 @@ app.post("/github-webhook", async (req, res) => {
         git_repository: `https://github.com/${currentOwner}/${currentRepoName}`,
         git_branch: branchName,
 
-        fqdn: uniqueDomain,
-
         ports_exposes: "80",
         build_pack: "dockerfile",
 
@@ -124,6 +122,8 @@ app.post("/github-webhook", async (req, res) => {
 
       await callCoolify("PATCH", `/applications/${appUuid}`, {
         ports_exposes: "80",
+        fqdn: uniqueDomain,
+
         // Lưu ý: Nếu lên Production dùng Domain thì bỏ dòng custom_docker_run_options này đi
         // custom_docker_run_options: `--publish ${randomPort}:80`,
       });
