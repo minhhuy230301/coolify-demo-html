@@ -79,20 +79,36 @@ app.post("/github-webhook", async (req, res) => {
 
       // Tạo tên App duy nhất: auto-TÊNREPO-TÊNNHÁNH
       // VD: auto-coolify-demo-html-hieu-phan-5
-      const uniqueAppName = `auto-${currentRepoName}-${branchName}`
-        .replace(/\//g, "-")
-        .substring(0, 60);
+      let safeRepoName = currentRepoName
+        .replace(/[^a-zA-Z0-9-]/g, "-")
+        .toLowerCase();
+      let safeBranchName = branchName
+        .replace(/[^a-zA-Z0-9-]/g, "-")
+        .toLowerCase();
+
+      const uniqueAppName = `auto-${safeRepoName}-${safeBranchName}`;
+
+      const uniqueSlug = `${safeRepoName.slice(0, 20)}-${safeBranchName.slice(
+        0,
+        30
+      )}`;
+      const uniqueDomain = `https://${uniqueSlug}.my-project.com`;
 
       const createPayload = {
         project_uuid: COOLIFY_PROJECT_UUID,
         server_uuid: COOLIFY_SERVER_UUID,
         environment_name: COOLIFY_ENV_NAME,
 
-        // 👉 Điền thông tin động vào đây
         git_repository: `https://github.com/${currentOwner}/${currentRepoName}`,
         git_branch: branchName,
+
+        // 👉 Dùng Domain đã ghép tên Repo
+        fqdn: uniqueDomain,
+
         ports_exposes: "80",
         build_pack: "dockerfile",
+
+        // 👉 Dùng Tên App đã ghép tên Repo
         name: uniqueAppName,
       };
 
