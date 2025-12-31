@@ -102,7 +102,6 @@ app.post("/github-webhook", async (req, res) => {
         git_repository: `https://github.com/${currentOwner}/${currentRepoName}`,
         git_branch: branchName,
 
-        // 👉 Dùng Domain đã ghép tên Repo
         fqdn: uniqueDomain,
 
         ports_exposes: "80",
