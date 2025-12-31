@@ -120,13 +120,25 @@ app.post("/github-webhook", async (req, res) => {
       const randomPort = Math.floor(Math.random() * (5000 - 4000 + 1) + 4000);
       console.log(`⚙️  Cấu hình Port: ${randomPort} cho ${uniqueAppName}...`);
 
-      await callCoolify("PATCH", `/applications/${appUuid}`, {
-        ports_exposes: "80",
-        fqdn: uniqueDomain,
+      try {
+        // Cố gắng set Domain (Nếu API cho phép)
+        await callCoolify("PATCH", `/applications/${appUuid}`, {
+          ports_exposes: "80",
+          fqdn: uniqueDomain,
+        });
+      } catch (e) {
+        console.warn(
+          "⚠️ API không cho set Domain tự động (Lỗi Beta). Đang chuyển sang chế độ Port Mapping..."
+        );
 
-        // Lưu ý: Nếu lên Production dùng Domain thì bỏ dòng custom_docker_run_options này đi
-        // custom_docker_run_options: `--publish ${randomPort}:80`,
-      });
+        // 2. FALLBACK: Nếu set Domain lỗi, ta map Port thủ công
+        // Đây là "phao cứu sinh" giúp App vẫn chạy được
+        await callCoolify("PATCH", `/applications/${appUuid}`, {
+          ports_exposes: "80",
+          // Map cổng 80 trong container ra cổng Random ngoài Server
+          custom_docker_run_options: `--publish ${randomPort}:80`,
+        });
+      }
 
       console.log(`🚀 Deploying...`);
       await callCoolify("POST", `/deploy?uuid=${appUuid}`);
