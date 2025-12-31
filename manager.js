@@ -95,7 +95,7 @@ app.post("/github-webhook", async (req, res) => {
         // static_image: "nginx:alpine",
         ports_exposes: "80",
 
-        custom_docker_run_options: `--publish ${randomPort}:80`,
+        // custom_docker_run_options: `--publish ${randomPort}:80`,
       });
 
       // Deploy lần đầu
